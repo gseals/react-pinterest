@@ -5,6 +5,9 @@ import firebaseConnection from '../helpers/data/connection';
 import Auth from '../components/Auth/Auth';
 import MyNavBar from '../components/MyNavBar/MyNavBar';
 
+import SingleBoard from '../components/SingleBoard/SingleBoard';
+import BoardsContainer from '../components/BoardsContainer/BoardsContainer';
+
 import './App.scss';
 
 firebaseConnection();
@@ -12,6 +15,7 @@ firebaseConnection();
 class App extends React.Component {
   state = {
     authed: false,
+    selectedBoardId: null,
   }
 
   componentDidMount() {
@@ -28,15 +32,30 @@ class App extends React.Component {
     this.removeListener();
   }
 
+  setSingleBoard = (selectedBoardId) => {
+    this.setState({ selectedBoardId });
+  }
+
+  renderView = () => {
+    const { authed, selectedBoardId } = this.state;
+    if (!authed) {
+      return (<Auth />);
+    }
+    if (!selectedBoardId) {
+      return (<BoardsContainer setSingleBoard={this.setSingleBoard} />);
+    }
+    return (<SingleBoard selectedBoardId={selectedBoardId} setSingleBoard={this.setSingleBoard}/>);
+  }
+
   render() {
-    const { authed } = this.state;
+    const { authed, selectedBoardId } = this.state;
 
     return (
       <div className="App">
       <MyNavBar authed={authed} />
         <button className='btn btn-danger'>Bootstrap Button</button>
         {
-          (authed) ? (<div>You logged in</div>) : (<Auth />)
+          this.renderView()
         }
       </div>
     );
