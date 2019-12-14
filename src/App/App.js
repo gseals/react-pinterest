@@ -14,6 +14,7 @@ firebaseConnection();
 class App extends React.Component {
   state = {
     authed: false,
+    selectedBoardId: null,
   }
 
   componentDidMount() {
@@ -30,6 +31,10 @@ class App extends React.Component {
     this.removeListener();
   }
 
+  setSingleBoard = (selectedBoardId) => {
+    this.setState({ selectedBoardId });
+  }
+
   render() {
     const { authed } = this.state;
 
@@ -38,7 +43,7 @@ class App extends React.Component {
       <MyNavBar authed={authed} />
         <button className='btn btn-danger'>Bootstrap Button</button>
         {
-          (authed) ? (<BoardsContainer />) : (<Auth />)
+          (authed) ? (<BoardsContainer setSingleBoard={this.setSingleBoard} />) : (<Auth />)
         }
       </div>
     );
