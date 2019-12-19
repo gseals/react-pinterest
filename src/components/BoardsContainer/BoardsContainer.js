@@ -16,6 +16,9 @@ class BoardsContainer extends React.Component {
 
   state = {
     boards: [],
+    editMode: false,
+    boardToEdit: {},
+    showBoardForm: false,
   }
 
   componentDidMount() {
@@ -34,10 +37,23 @@ class BoardsContainer extends React.Component {
     boardData.saveBoard(newBoard)
       .then(() => {
         this.getBoards();
+        this.setState({ showBoardForm: false });
       })
       .catch((errorFromSaveBoard) => console.error({ errorFromSaveBoard }));
   }
 
+  updateBoard = (boardId, boardToUpdateBoard) => {
+    boardData.updateBoard(boardId, boardToUpdateBoard)
+      .then(() => {
+        this.getBoards();
+        this.setState({ editMode: false, showBoardForm: false });
+      })
+      .catch((errorFromUpdateBoard) => console.error({ errorFromUpdateBoard }));
+  }
+
+  setEditMode = (editMode) => {
+    this.setState({ editMode, showBoardForm: true });
+  }
   // componentDidMount() {
   //   boardData.getBoardsByUid(authData.getUid())
   //     .then((boards) => {
@@ -46,13 +62,22 @@ class BoardsContainer extends React.Component {
   //     .catch((errFromBoardsContainer) => console.error({ errFromBoardsContainer }));
   // }
 
+  setBoardToEdit = (board) => {
+    this.setState({ boardToEdit: board });
+  }
+
+  setShowBoardForm = () => {
+    this.setState({ showBoardForm: true });
+  }
+
   render() {
     const { setSingleBoard } = this.props;
 
     return (
     <div>
-      <BoardForm addBoard={this.addBoard}/>
-    {this.state.boards.map((board) => (<Board key={board.id} board={board} setSingleBoard={setSingleBoard}/>))}
+      <button onClick={this.setShowBoardForm}>Add a new board</button>
+    { this.state.showBoardForm && <BoardForm addBoard={this.addBoard} editMode={this.state.editMode} boardToEdit={this.state.boardToEdit} updateBoard={this.updateBoard} /> }
+    {this.state.boards.map((board) => (<Board key={board.id} board={board} setSingleBoard={setSingleBoard} setEditMode={this.setEditMode} setBoardToEdit={this.setBoardToEdit} />))}
     </div>);
   }
 }
